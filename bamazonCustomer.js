@@ -28,11 +28,13 @@ connection.connect(function(err) {
 // ____________________________________________________________________________________
 
 function purchaseItem() {
+    // Query the DB for all items in store inventory
     connection.query("SELECT * FROM products", function(err, results) {
         if (err) throw err;
 
         displayItems(results);
 
+        // Prompt customer to make purchase selection
         inquirer.prompt([
             {
                 name: "itemNumber",
@@ -44,26 +46,40 @@ function purchaseItem() {
                     }
                     return false;
                 }
-            },
-            {
-                name: "qty",
-                type: "input",
-                message: "How many would you like to purchase?",
-                // validate: function(num){
-                //     if (parseInt(num) < results.length) {
-                //         return true;
-                //     }
-                //     return false;
-                // }
-
             }
-          ])
-          .then(function(answer) {
-            console.log(`Answer: ${answer.itemNumber}\nQty: ${answer.qty}`);
+        ])
+        .then(function(ans1) {
+            // Split into two prompt statements. Use the item number of the first response to check if there is sufficient inventory, 
+            // then proceed with purchase. Otherwise, ask customer to enter another amount.
+
+            let item = results[parseInt(ans1.itemNumber)].id;
+
+            // Prompt user to select quantity
+            inquirer.prompt([
+                {
+                    name: "qty",
+                    type: "input",
+                    message: "How many would you like to purchase?",
+                    validate: function(num){
+                        if (parseInt(num) < results[item].stock_quantity) {
+                            return true;
+                        }
+                        console.log(chalk.red(" Insufficient quantity in stock, please select another amount."));
+                        return false;
+                    }
+                }
+            ])
+            .then(function(ans2) {
+            // console.log(`Answer: ${ans1.itemNumber}\nQty: ${ans2.qty}`);
+                let qty = results[item].stock_quantity - parseInt(ans2.qty);
+                console.log (`Qty: ${qty}`);
+                updateInventory(item, qty);
+            })
+            
           });
 
     });
-    connection.end();
+    // connection.end();
 }
 
 // ____________________________________________________________________________________
@@ -75,9 +91,31 @@ function displayItems(list) {
 
     // Display the inventory
     for (var i =0; i < list.length; i++) {
-        console.log(`${[i].toString().padEnd(7)} ${list[i].product_name.padEnd(25)} ${list[i].department.padEnd(17)} ${list[i].customer_price.toString().padEnd(17)} ${list[i].stock_quantity}`);
+        console.log(`${list[i].id.toString().padEnd(7)} ${list[i].product_name.padEnd(25)} ${list[i].department.padEnd(17)} ${list[i].customer_price.toString().padEnd(17)} ${list[i].stock_quantity}`);
     }
     console.log("\n");
 }
 
 // ____________________________________________________________________________________
+
+function updateInventory(itemNum, remaining_qty) {
+    var query = connection.query(
+        "UPDATE products SET ? WHERE ?",
+        [
+          {
+            stock_quantity: remaining_qty
+          },
+          {
+            id: itemNum
+          }
+        ],
+        function(err, res) {
+            if (err) throw err;
+
+            console.log(res.affectedRows + " products updated!\n");
+        }
+    );
+    
+    connection.end();
+
+}
