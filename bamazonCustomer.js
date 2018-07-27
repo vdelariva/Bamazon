@@ -32,6 +32,7 @@ function purchaseItem() {
     connection.query("SELECT * FROM products", function(err, results) {
         if (err) throw err;
 
+        var item = 0;
         displayItems(results);
 
         // Prompt customer to make purchase selection
@@ -39,9 +40,11 @@ function purchaseItem() {
             {
                 name: "itemNumber",
                 type: "input",
-                message: "Which item would you like to purchase?",
+                message: chalk.yellow("Which item would you like to purchase?"),
                 validate: function(num){
-                    if (parseInt(num) < results.length) {
+                    // Check if item number is valid, this method returns the object if itemNumber is found
+                    item = results.find(x => x.id === parseInt(num))
+                    if (item) {
                         return true;
                     }
                     return false;
@@ -49,37 +52,29 @@ function purchaseItem() {
             }
         ])
         .then(function(ans1) {
-            // Split into two prompt statements. Use the item number of the first response to check if there is sufficient inventory, 
+            // Split into two prompt statements. Use the item number from the first response to check if there is sufficient inventory, 
             // then proceed with purchase. Otherwise, ask customer to enter another amount.
-
-            let item = results[parseInt(ans1.itemNumber)].id;
 
             // Prompt user to select quantity
             inquirer.prompt([
                 {
                     name: "qty",
                     type: "input",
-                    message: "How many would you like to purchase?",
+                    message: chalk.yellow("How many would you like to purchase?"),
                     validate: function(num){
-                        if (parseInt(num) < results[item].stock_quantity) {
+                        if (parseInt(num) < item.stock_quantity) {
                             return true;
                         }
-                        console.log(chalk.red(" Insufficient quantity in stock, please select another amount."));
+                        console.log(chalk.red("\rInsufficient quantity in stock, please select another amount."));
                         return false;
                     }
                 }
             ])
             .then(function(ans2) {
-            // console.log(`Answer: ${ans1.itemNumber}\nQty: ${ans2.qty}`);
-                let qty = results[item].stock_quantity - parseInt(ans2.qty);
-                console.log (`Qty: ${qty}`);
-                updateInventory(item, qty);
+                updateInventory(item, parseInt(ans2.qty));
             })
-            
-          });
-
+        });
     });
-    // connection.end();
 }
 
 // ____________________________________________________________________________________
@@ -98,23 +93,21 @@ function displayItems(list) {
 
 // ____________________________________________________________________________________
 
-function updateInventory(itemNum, remaining_qty) {
-    var query = connection.query(
-        "UPDATE products SET ? WHERE ?",
-        [
-          {
-            stock_quantity: remaining_qty
-          },
-          {
-            id: itemNum
-          }
-        ],
-        function(err, res) {
-            if (err) throw err;
+function updateInventory(item, qty) {
+    if (qty != 0) {
+        connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [{stock_quantity: (item.stock_quantity - qty)}, {id: item.id}],
+            function(err, res) {
+                if (err) throw err;
 
-            console.log(res.affectedRows + " products updated!\n");
-        }
-    );
+                console.log(chalk`\n{green.bold Thank you for your purchase!} Your total is {magenta $${item.customer_price*qty}.}\n`);
+            }
+        );
+    }
+    else {
+        console.log(chalk.cyan(`\nSorry we weren't able to help you today. Come back soon!\n`));
+    }
     
     connection.end();
 

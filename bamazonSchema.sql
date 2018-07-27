@@ -19,7 +19,7 @@ INSERT INTO products (product_name, department, customer_price, stock_quantity)
 VALUES ("Babolat Pure Aero", "Equipment", 209.00, 89);
 
 INSERT INTO products (product_name, department, customer_price, stock_quantity)
-VALUES ("Prince Text", "Equipment", 189.00, 70);
+VALUES ("Prince Textreme", "Equipment", 189.00, 70);
 
 INSERT INTO products (product_name, department, customer_price, stock_quantity)
 VALUES ("Adidas Skirt", "Apparel", 55.00, 43);
