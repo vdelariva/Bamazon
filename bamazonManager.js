@@ -29,36 +29,56 @@ connection.connect(function(err) {
 
 function manageInventory() {
 
-    // Prompt user for command selection
-    console.log(chalk.blue.bold(`Welcome to Inventory Management System.\n`));
-    inquirer.prompt([
-        {
-            name: "command",
-            type: "rawlist",
-            message: "Please select a function",
-            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
-        }
-    ])
-    .then(function(cmd) {
-        // console.log(cmd);
-        switch (cmd.command) {
-            case "View Products for Sale":
-                viewProducts();
-                break;
-            case "View Low Inventory":
-                viewLowInventory();
-                break;
-            case "Add to Inventory":
-                addInventory();
-                break;
-            case "Add New Product":
-                addProduct();
-                break;
-            default:
-            console.log("nope");
-        }
+    var manageMore = false;
 
-    })
+    console.log(chalk.blue.bold(`Welcome to Inventory Management System.\n`));
+
+    // do {
+
+        // Prompt user for command selection
+        inquirer.prompt([
+            {
+                name: "command",
+                type: "rawlist",
+                message: "Please select a function",
+                choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
+            }
+        ])
+        .then(function(cmd) {
+            // console.log(cmd);
+            switch (cmd.command) {
+                case "View Products for Sale":
+                    viewProducts();
+                    break;
+                case "View Low Inventory":
+                    viewLowInventory();
+                    break;
+                case "Add to Inventory":
+                    addInventory();
+                    break;
+                case "Add New Product":
+                    addProduct();
+                    break;
+                default:
+                console.log("nope");
+            }
+
+            // inquirer.prompt ([
+            //     {
+            //         name: "nextcmd",
+            //         type: "confirm",
+            //         message: "Continue with inventory management?"
+            //     }
+            // ])
+            // .then (function (res) {
+            //     console.log (res);
+            //     manageMore = res.nextcmd;
+            // });
+
+        });
+    // }
+    // while (manageMore);
+    // console.log(manageMore)
     // connection.end();
 }
 
@@ -67,11 +87,12 @@ function manageInventory() {
 function viewProducts() {
 
     // Query the DB for all items in store inventory
-    connection.query("SELECT * FROM products", function(err, results) {
+    connection.query("SELECT * FROM products", (err, results) => {
         if (err) throw err;
 
         console.log(chalk.blue.bold("\nStore Inventory"));
         displayItems(results);
+        return true
     });
     // connection.end();
 }
@@ -81,13 +102,13 @@ function viewProducts() {
 function viewLowInventory() {
 
     // Query the DB for all items in store inventory
-    connection.query("SELECT * FROM products WHERE stock_quantity < 50", function(err, results) {
+    connection.query(`SELECT * FROM products WHERE stock_quantity < ${lowInventory}`, (err, results) => {
         if (err) throw err;
 
         console.log(chalk.red.bold("\nProducts with Low Inventory"));
         displayItems(results);
     });
-    connection.end();
+    // connection.end();
 }
 
 // ____________________________________________________________________________________
@@ -121,20 +142,22 @@ function addProduct() {
         // Add new product to inventory
         connection.query("INSERT INTO products SET ?", 
             [{product_name: response.name, department: response.type, customer_price: response.price, stock_quantity: response.quantity}],
-            function(err, results) {
+            (err, results) =>  {
                 if (err) throw err;
 
                 console.log(chalk.green.bold(`\n${results.affectedRows} product added!\n`));
         });
     });
-
     // connection.end();
-
 }
 
 // ____________________________________________________________________________________
 
 function addInventory() {
+
+    // Add way to wait for viewProducts to finish before prompting user...
+    // const view = async () => { await viewProducts() }
+
     inquirer.prompt ([
         {
             name: "id",
@@ -148,10 +171,18 @@ function addInventory() {
         }
     ])
     .then(function(res){
+        // Update product inventory
+        // connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: (stock_quantity+res.qty)}, {id: res.id}], 
+        connection.query(`UPDATE products SET stock_quantity = stock_quantity+${res.qty} WHERE ?`, [{id: res.id}], 
 
+            function (err,results) {
+                if (err) throw err;
+
+                console.log(chalk.green.bold(`\n${results.affectedRows} product updated!\n`));
+                connection.end();
+            }
+        );
     });
-
-
 }
 
 // ____________________________________________________________________________________
