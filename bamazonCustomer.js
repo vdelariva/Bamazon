@@ -78,6 +78,20 @@ function purchaseItem() {
 }
 
 // ____________________________________________________________________________________
+// Possibly use this function to dry out the code - same function used in manager code. If not remove...
+
+function viewProducts() {
+
+    // Query the DB for all items in store inventory
+    connection.query("SELECT * FROM products", (err, results) => {
+        if (err) throw err;
+
+        console.log(chalk.blue.bold("\nStore Inventory"));
+        displayItems(results);
+    });
+}
+
+// ____________________________________________________________________________________
 
 function displayItems(list) {
 
@@ -108,7 +122,5 @@ function updateInventory(item, qty) {
     else {
         console.log(chalk.cyan(`\nSorry we weren't able to help you today. Come back soon!\n`));
     }
-    
     connection.end();
-
 }
