@@ -17,11 +17,12 @@ const lowInventory = 50;
 var connection = mysql.createConnection(sqlConfig);
 
 // connect to the mysql server and sql database
-connection.connect(function(err) {
+connection.connect((err) => {
     if (err) throw err;
     
+    console.log(chalk.blue.bold(`\nWelcome to Bamazon Inventory Managment Program\n`))
     manageInventory();
-  });
+});
   
 // ____________________________________________________________________________________
 // Functions
@@ -29,57 +30,35 @@ connection.connect(function(err) {
 
 function manageInventory() {
 
-    var manageMore = false;
-
-    console.log(chalk.blue.bold(`Welcome to Inventory Management System.\n`));
-
-    // do {
-
-        // Prompt user for command selection
-        inquirer.prompt([
-            {
-                name: "command",
-                type: "rawlist",
-                message: "Please select a function",
-                choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
-            }
-        ])
-        .then(function(cmd) {
-            // console.log(cmd);
-            switch (cmd.command) {
-                case "View Products for Sale":
-                    viewProducts();
-                    break;
-                case "View Low Inventory":
-                    viewLowInventory();
-                    break;
-                case "Add to Inventory":
-                    addInventory();
-                    break;
-                case "Add New Product":
-                    addProduct();
-                    break;
-                default:
-                console.log("nope");
-            }
-
-            // inquirer.prompt ([
-            //     {
-            //         name: "nextcmd",
-            //         type: "confirm",
-            //         message: "Continue with inventory management?"
-            //     }
-            // ])
-            // .then (function (res) {
-            //     console.log (res);
-            //     manageMore = res.nextcmd;
-            // });
-
-        });
-    // }
-    // while (manageMore);
-    // console.log(manageMore)
-    // connection.end();
+    // Prompt user for command selection
+    inquirer.prompt([
+        {
+            name: "command",
+            type: "rawlist",
+            message: "Please select a function",
+            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "Exit"]
+        }
+    ])
+    .then(function(cmd) {
+        // console.log(cmd);
+        switch (cmd.command) {
+            case "View Products for Sale":
+                viewProducts();
+                break;
+            case "View Low Inventory":
+                viewLowInventory();
+                break;
+            case "Add to Inventory":
+                addInventory();
+                break;
+            case "Add New Product":
+                addProduct();
+                break;
+            case "Exit":
+                exitBamazon();
+                break;
+        }
+    });
 }
 
 // ____________________________________________________________________________________
@@ -92,9 +71,8 @@ function viewProducts() {
 
         console.log(chalk.blue.bold("\nStore Inventory"));
         displayItems(results);
-        return true
+        manageInventory();
     });
-    // connection.end();
 }
 
 // ____________________________________________________________________________________
@@ -107,8 +85,8 @@ function viewLowInventory() {
 
         console.log(chalk.red.bold("\nProducts with Low Inventory"));
         displayItems(results);
+        manageInventory();
     });
-    // connection.end();
 }
 
 // ____________________________________________________________________________________
@@ -146,9 +124,9 @@ function addProduct() {
                 if (err) throw err;
 
                 console.log(chalk.green.bold(`\n${results.affectedRows} product added!\n`));
+                manageInventory();
         });
     });
-    // connection.end();
 }
 
 // ____________________________________________________________________________________
@@ -179,7 +157,7 @@ function addInventory() {
                 if (err) throw err;
 
                 console.log(chalk.green.bold(`\n${results.affectedRows} product updated!\n`));
-                connection.end();
+                manageInventory();
             }
         );
     });
@@ -197,4 +175,12 @@ function displayItems(list) {
         console.log(`${list[i].id.toString().padEnd(7)} ${list[i].product_name.padEnd(25)} ${list[i].department.padEnd(17)} ${list[i].customer_price.toString().padEnd(17)} ${list[i].stock_quantity}`);
     }
     console.log("\n");
+}
+
+// ____________________________________________________________________________________
+
+function exitBamazon() {
+
+    console.log(chalk.blue.bold("\nHave a great day!\n"))
+    connection.end();
 }

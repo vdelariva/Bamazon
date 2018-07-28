@@ -19,9 +19,11 @@ var connection = mysql.createConnection(sqlConfig);
 // connect to the mysql server and sql database
 connection.connect(function(err) {
     if (err) throw err;
+
+    console.log(chalk.blue.bold(`\nWelcome to Bamazon Tennis Superstore!\n`))
     
     purchaseItem();
-  });
+});
   
 // ____________________________________________________________________________________
 // Functions
@@ -99,6 +101,7 @@ function displayItems(list) {
     console.log(chalk.blue("------------------------------------------------------------------------------"));
 
     // Display the inventory
+    // Don't display product_sales column to customer
     for (var i =0; i < list.length; i++) {
         console.log(`${list[i].id.toString().padEnd(7)} ${list[i].product_name.padEnd(25)} ${list[i].department.padEnd(17)} ${list[i].customer_price.toString().padEnd(17)} ${list[i].stock_quantity}`);
     }
@@ -111,7 +114,7 @@ function updateInventory(item, qty) {
     if (qty != 0) {
         connection.query(
             "UPDATE products SET ? WHERE ?",
-            [{stock_quantity: (item.stock_quantity - qty)}, {id: item.id}],
+            [{stock_quantity: (item.stock_quantity - qty), product_sales: item.product_sales+(item.customer_price*qty)}, {id: item.id}],
             function(err, res) {
                 if (err) throw err;
 
