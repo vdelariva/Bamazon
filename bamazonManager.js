@@ -1,3 +1,5 @@
+// var customer = require("./bamazonCustomer");
+
 // Required NPM modules
 var mysql = require("mysql");
 var inquirer = require("inquirer");
@@ -93,48 +95,56 @@ function viewLowInventory() {
 
 function addProduct() {
 
-    inquirer.prompt ([
-        {
-            name: "name",
-            type: "input",
-            message: "Enter Product Name"
-        },
-        {
-            name: "type" ,
-            type: "rawlist",
-            message: "Select Product Category",
-            choices: ["Equipment", "Apparel", "Shoes"]
-        },
-        {
-            name: "price",
-            type: "input",
-            message: "Enter Customer Price"
-        },
-        {
-            name: "quantity",
-            type: "input",
-            message: "Enter Quantity"
-        }
-    ])
-    .then(function(response) {
-        // Add new product to inventory
-        connection.query("INSERT INTO products SET ?", 
-            [{product_name: response.name, department: response.type, customer_price: response.price, stock_quantity: response.quantity}],
-            (err, results) =>  {
-                if (err) throw err;
+    // Get the list of departments for choice selection from departments table
+    connection.query(`SELECT department_name FROM departments`, (err, results) => { 
+        if (err) throw err;
 
-                console.log(chalk.green.bold(`\n${results.affectedRows} product added!\n`));
-                manageInventory();
+        let choiceArray = [];
+
+        for (i=0; i< results.length; i++) {
+            choiceArray[i] = results[i].department_name;
+        }
+
+        inquirer.prompt ([
+            {
+                name: "name",
+                type: "input",
+                message: "Enter Product Name"
+            },
+            {
+                name: "type" ,
+                type: "rawlist",
+                message: "Select Product Category",
+                choices: choiceArray
+            },
+            {
+                name: "price",
+                type: "input",
+                message: "Enter Customer Price"
+            },
+            {
+                name: "quantity",
+                type: "input",
+                message: "Enter Quantity"
+            }
+        ])
+        .then(function(response) {
+            // Add new product to inventory
+            connection.query("INSERT INTO products SET ?", 
+                [{product_name: response.name, department: response.type, customer_price: response.price, stock_quantity: response.quantity}],
+                (err, results) =>  {
+                    if (err) throw err;
+
+                    console.log(chalk.green.bold(`\n${results.affectedRows} product added!\n`));
+                    manageInventory();
+            });
         });
-    });
+    })
 }
 
 // ____________________________________________________________________________________
 
 function addInventory() {
-
-    // Add way to wait for viewProducts to finish before prompting user...
-    // const view = async () => { await viewProducts() }
 
     inquirer.prompt ([
         {

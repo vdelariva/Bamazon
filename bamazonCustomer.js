@@ -20,7 +20,7 @@ var connection = mysql.createConnection(sqlConfig);
 connection.connect(function(err) {
     if (err) throw err;
 
-    console.log(chalk.blue.bold(`\nWelcome to Bamazon Tennis Superstore!\n`))
+    console.log(chalk.blue.bold(`\nWelcome to Bamazon Tennis Super Store!\n`))
     
     purchaseItem();
 });
@@ -80,20 +80,6 @@ function purchaseItem() {
 }
 
 // ____________________________________________________________________________________
-// Possibly use this function to dry out the code - same function used in manager code. If not remove...
-
-function viewProducts() {
-
-    // Query the DB for all items in store inventory
-    connection.query("SELECT * FROM products", (err, results) => {
-        if (err) throw err;
-
-        console.log(chalk.blue.bold("\nStore Inventory"));
-        displayItems(results);
-    });
-}
-
-// ____________________________________________________________________________________
 
 function displayItems(list) {
 
@@ -127,3 +113,5 @@ function updateInventory(item, qty) {
     }
     connection.end();
 }
+
+module.exports.displayItems = displayItems;
