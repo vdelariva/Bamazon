@@ -3,6 +3,9 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var chalk = require("chalk");
 
+// Common functions used in bamazonCustomer/Manager/Supervisor
+var common = require("./common.js");
+
 var sqlConfig = {
     host: "localhost",
     port: 3306,
@@ -18,7 +21,7 @@ var connection = mysql.createConnection(sqlConfig);
 connection.connect(function(err) {
     if (err) throw err;
     
-    console.log(chalk.blue.bold("\nWelcome to Bamazon Supervisor Department Management Program\n"))
+    common.printHeader("Welcome to Bamazon Supervisor Department Management App","green");
     manageDepartments();
 });
 
@@ -58,11 +61,15 @@ function manageDepartments() {
 function viewSales() {
 
     // Query the DB for all items in store inventory
-    connection.query("SELECT department, SUM(product_sales) AS Total_Sales FROM products LEFT JOIN departments ON department = department_name GROUP BY department", 
+    connection.query(
+        "SELECT department, (sales.total_sales - departments.over_head_costs) AS total_profit "
+        + "FROM (SELECT department, SUM(product_sales) AS total_sales FROM products GROUP BY department) AS sales "
+        + "INNER JOIN departments ON sales.department = departments.department_name",
+    
     (err, results) => {
         if (err) throw err;
 
-        console.log(`Results: ${JSON.stringify(results)}`);
+        displaySales(results)
         manageDepartments();
     });
 }
@@ -71,11 +78,22 @@ function viewSales() {
 
 function addDepartment() {
 
+    let maxDeptLength = 13;
+
     inquirer.prompt ([
         {
             name: "name",
             type: "input",
-            message: "Enter New Department Name"
+            message: "Enter New Department Name",
+            validate: function(dept){
+                // Check if item number is valid, this method returns the object if itemNumber is found
+                if (dept.length <= maxDeptLength) {
+                    return true;
+                }
+                console.log(chalk.red.bold('\nDepartment name too long'));
+                return false;
+            }
+
         },
         {
             name: "costs" ,
@@ -88,18 +106,34 @@ function addDepartment() {
         connection.query("INSERT INTO departments SET ?", 
             [{department_name: response.name, over_head_costs: response.costs}],
             (err, results) =>  {
-                if (err) throw err;
 
-                console.log(chalk.green.bold(`\n${results.affectedRows} product added!\n`));
-                manageDepartments();
+            if (err) throw err;
+
+            console.log(chalk.green.bold(`\n${results.affectedRows} product added!\n`));
+            manageDepartments();
         });
     });
 }
 
 // ____________________________________________________________________________________
 
+function displaySales(list) {
+    
+    console.log(chalk.green("\nDepartment        Total Profit($)"));
+    console.log(chalk.green("--------------------------------"));
+
+    // Display the inventory
+    // Don't display product_sales column to customer
+    for (var i =0; i < list.length; i++) {
+        console.log(`${list[i].department.padEnd(20)} ${list[i].total_profit.toString().padEnd(17)}`);
+    }
+    console.log("\n");
+
+}
+// ____________________________________________________________________________________
+
 function exitBamazon() {
 
-    console.log(chalk.blue.bold("\nHave a great day!\n"))
+    console.log(chalk.green.bold("\nHave a great day!\n"))
     connection.end();
 }

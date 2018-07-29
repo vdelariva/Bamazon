@@ -14,7 +14,7 @@ CREATE TABLE products(
 );
 
 INSERT INTO products (product_name, department, customer_price, stock_quantity,product_sales)
-VALUES ("Wilson Pro Staff", "Equipment", 219.00, 100, 1670.00);
+VALUES ("Wilson Pro Staff", "Equipment", 219.00, 3, 1670.00);
 
 INSERT INTO products (product_name, department, customer_price, stock_quantity,product_sales)
 VALUES ("Babolat Pure Aero", "Equipment", 209.00, 89, 1432.00);
@@ -23,7 +23,7 @@ INSERT INTO products (product_name, department, customer_price, stock_quantity,p
 VALUES ("Prince Textreme", "Equipment", 189.00, 70, 732.00);
 
 INSERT INTO products (product_name, department, customer_price, stock_quantity,product_sales)
-VALUES ("Adidas Skirt", "Apparel", 55.00, 43, 455.00);
+VALUES ("Adidas Skirt", "Apparel", 55.00, 2, 455.00);
 
 INSERT INTO products (product_name, department, customer_price, stock_quantity,product_sales)
 VALUES ("Nike Shorts", "Apparel", 75.00, 30, 798.00);
@@ -54,10 +54,10 @@ CREATE TABLE departments(
 );
 
 INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Equipment", 6000);
+VALUES ("Equipment", 500.00);
 
 INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Apparel", 10000);
+VALUES ("Apparel", 200.00);
 
 INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Shoes", 3000);
+VALUES ("Shoes", 250.00);

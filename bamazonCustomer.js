@@ -5,6 +5,9 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var chalk = require("chalk");
 
+// Common functions used in bamazonCustomer/Manager/Supervisor
+var common = require("./common.js");
+
 var sqlConfig = {
     host: "localhost",
     port: 3306,
@@ -20,8 +23,7 @@ var connection = mysql.createConnection(sqlConfig);
 connection.connect(function(err) {
     if (err) throw err;
 
-    console.log(chalk.blue.bold(`\nWelcome to Bamazon Tennis Super Store!\n`))
-    
+    common.printHeader("Welcome to Bamazon Tennis Super Store!","blue");
     purchaseItem();
 });
   
@@ -35,7 +37,7 @@ function purchaseItem() {
         if (err) throw err;
 
         var item = 0;
-        displayItems(results);
+        common.displayItems(results, "blue","customer");
 
         // Prompt customer to make purchase selection
         inquirer.prompt([
@@ -81,21 +83,6 @@ function purchaseItem() {
 
 // ____________________________________________________________________________________
 
-function displayItems(list) {
-
-    console.log(chalk.blue("\nItem #  Product                   Department      Price($)       Available Qty"));
-    console.log(chalk.blue("------------------------------------------------------------------------------"));
-
-    // Display the inventory
-    // Don't display product_sales column to customer
-    for (var i =0; i < list.length; i++) {
-        console.log(`${list[i].id.toString().padEnd(7)} ${list[i].product_name.padEnd(25)} ${list[i].department.padEnd(17)} ${list[i].customer_price.toString().padEnd(17)} ${list[i].stock_quantity}`);
-    }
-    console.log("\n");
-}
-
-// ____________________________________________________________________________________
-
 function updateInventory(item, qty) {
     if (qty != 0) {
         connection.query(
@@ -113,5 +100,3 @@ function updateInventory(item, qty) {
     }
     connection.end();
 }
-
-module.exports.displayItems = displayItems;

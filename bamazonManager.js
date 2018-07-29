@@ -1,9 +1,12 @@
-// var customer = require("./bamazonCustomer");
+// Manager Inventory Management App
 
 // Required NPM modules
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var chalk = require("chalk");
+
+// Common functions used in bamazonCustomer/Manager/Supervisor
+var common = require("./common.js");
 
 var sqlConfig = {
     host: "localhost",
@@ -13,7 +16,7 @@ var sqlConfig = {
     database: "bamazon_DB"
 };
 
-const lowInventory = 50;
+const lowInventory = 5;
 
 // create the connection information for the sql database
 var connection = mysql.createConnection(sqlConfig);
@@ -22,7 +25,7 @@ var connection = mysql.createConnection(sqlConfig);
 connection.connect((err) => {
     if (err) throw err;
     
-    console.log(chalk.blue.bold(`\nWelcome to Bamazon Inventory Managment Program\n`))
+    common.printHeader("Welcome to Bamazon Inventory Managment App!","magenta");
     manageInventory();
 });
   
@@ -71,8 +74,8 @@ function viewProducts() {
     connection.query("SELECT * FROM products", (err, results) => {
         if (err) throw err;
 
-        console.log(chalk.blue.bold("\nStore Inventory"));
-        displayItems(results);
+        common.printHeader("Store Inventory", "magenta");
+        common.displayItems(results, "magenta", "manager");
         manageInventory();
     });
 }
@@ -81,12 +84,13 @@ function viewProducts() {
 
 function viewLowInventory() {
 
-    // Query the DB for all items in store inventory
+    // Query the DB for all items in store with low inventory
     connection.query(`SELECT * FROM products WHERE stock_quantity < ${lowInventory}`, (err, results) => {
         if (err) throw err;
 
-        console.log(chalk.red.bold("\nProducts with Low Inventory"));
-        displayItems(results);
+        // console.log(chalk.red.bold("\nProducts with Low Inventory"));
+        common.printHeader("Products with Low Inventory", "red");
+        common.displayItems(results,"red", "manager");
         manageInventory();
     });
 }
@@ -94,6 +98,8 @@ function viewLowInventory() {
 // ____________________________________________________________________________________
 
 function addProduct() {
+    // Add a new product to the store inventory
+    var maxProdLength = 20;
 
     // Get the list of departments for choice selection from departments table
     connection.query(`SELECT department_name FROM departments`, (err, results) => { 
@@ -102,14 +108,23 @@ function addProduct() {
         let choiceArray = [];
 
         for (i=0; i< results.length; i++) {
-            choiceArray[i] = results[i].department_name;
+            choiceArray.push(results[i].department_name);
         }
 
         inquirer.prompt ([
             {
                 name: "name",
                 type: "input",
-                message: "Enter Product Name"
+                message: "Enter Product Name",
+                validate: function(prod){
+                    // Check if item number is valid, this method returns the object if itemNumber is found
+                    if (dept.length <= maxProdLength) {
+                        return true;
+                    }
+                    console.log(chalk.red.bold('\nProduct name too long'));
+                    return false;
+                }
+    
             },
             {
                 name: "type" ,
@@ -145,6 +160,7 @@ function addProduct() {
 // ____________________________________________________________________________________
 
 function addInventory() {
+    // Increment stock quanity by user entered amount
 
     inquirer.prompt ([
         {
@@ -171,20 +187,6 @@ function addInventory() {
             }
         );
     });
-}
-
-// ____________________________________________________________________________________
-
-function displayItems(list) {
-
-    console.log(chalk.blue("\nItem #  Product                   Department      Price($)       Available Qty"));
-    console.log(chalk.blue("------------------------------------------------------------------------------"));
-
-    // Display the inventory
-    for (var i =0; i < list.length; i++) {
-        console.log(`${list[i].id.toString().padEnd(7)} ${list[i].product_name.padEnd(25)} ${list[i].department.padEnd(17)} ${list[i].customer_price.toString().padEnd(17)} ${list[i].stock_quantity}`);
-    }
-    console.log("\n");
 }
 
 // ____________________________________________________________________________________
