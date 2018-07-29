@@ -118,13 +118,12 @@ function addProduct() {
                 message: "Enter Product Name",
                 validate: function(prod){
                     // Check if item number is valid, this method returns the object if itemNumber is found
-                    if (dept.length <= maxProdLength) {
+                    if (prod.length <= maxProdLength) {
                         return true;
                     }
                     console.log(chalk.red.bold('\nProduct name too long'));
                     return false;
                 }
-    
             },
             {
                 name: "type" ,
@@ -178,7 +177,6 @@ function addInventory() {
                     }
                     return false;
                 }
-
             },
             {
                 name: "qty" ,

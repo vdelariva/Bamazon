@@ -69,6 +69,7 @@ function viewSales() {
     (err, results) => {
         if (err) throw err;
 
+        common.printHeader("Product Sales by Department", "green")
         displaySales(results)
         manageDepartments();
     });
@@ -78,7 +79,7 @@ function viewSales() {
 
 function addDepartment() {
 
-    let maxDeptLength = 13;
+    let maxDeptLength = 12;
 
     inquirer.prompt ([
         {
@@ -127,7 +128,6 @@ function displaySales(list) {
         console.log(`${list[i].department.padEnd(20)} ${list[i].total_profit.toString().padEnd(17)}`);
     }
     console.log("\n");
-
 }
 // ____________________________________________________________________________________
 
