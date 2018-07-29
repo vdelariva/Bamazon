@@ -93,7 +93,6 @@ function addDepartment() {
                 console.log(chalk.red.bold('\nDepartment name too long'));
                 return false;
             }
-
         },
         {
             name: "costs" ,

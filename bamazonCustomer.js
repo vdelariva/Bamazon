@@ -36,8 +36,9 @@ function purchaseItem() {
     connection.query("SELECT * FROM products", function(err, results) {
         if (err) throw err;
 
-        var item = 0;
         common.displayItems(results, "blue","customer");
+
+        var item = 0;
 
         // Prompt customer to make purchase selection
         inquirer.prompt([
@@ -46,8 +47,8 @@ function purchaseItem() {
                 type: "input",
                 message: chalk.yellow("Which item would you like to purchase?"),
                 validate: function(num){
-                    // Check if item number is valid, this method returns the object if itemNumber is found
-                    item = results.find(x => x.id === parseInt(num))
+                    // Check if item number is valid, returns object if found, else returns -1 if not found
+                    item = results.find(x => x.id === parseInt(num));
                     if (item) {
                         return true;
                     }
@@ -75,7 +76,7 @@ function purchaseItem() {
                 }
             ])
             .then(function(ans2) {
-                updateInventory(item, parseInt(ans2.qty));
+                updateInventory(ans1.itemNumber, parseInt(ans2.qty));
             })
         });
     });
@@ -83,20 +84,32 @@ function purchaseItem() {
 
 // ____________________________________________________________________________________
 
-function updateInventory(item, qty) {
+function updateInventory(ix, qty) {
     if (qty != 0) {
+
+        // Get the item record, need current values to use to update
         connection.query(
-            "UPDATE products SET ? WHERE ?",
-            [{stock_quantity: (item.stock_quantity - qty), product_sales: item.product_sales+(item.customer_price*qty)}, {id: item.id}],
-            function(err, res) {
+            "SELECT * FROM products WHERE ?", [{id:ix}],
+            function(err, res1) {
                 if (err) throw err;
 
-                console.log(chalk`\n{green.bold Thank you for your purchase!} Your total is {magenta $${item.customer_price*qty}.}\n`);
+                connection.query("UPDATE products SET ? WHERE ?", [{
+                        stock_quantity: (res1[0].stock_quantity - qty), 
+                        product_sales: res1[0].product_sales+(res1[0].customer_price*qty)
+                    }, {
+                        id: ix
+                    }],
+                    function(err, res2) {
+                        if (err) throw err;
+
+                        console.log(chalk`\n{green.bold Thank you for your purchase!} Your total is {magenta $${res1[0].customer_price*qty}.}\n`);
+                        connection.end();
+                    }
+                );
             }
         );
     }
     else {
         console.log(chalk.cyan(`\nSorry we weren't able to help you today. Come back soon!\n`));
     }
-    connection.end();
 }

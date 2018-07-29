@@ -162,30 +162,42 @@ function addProduct() {
 function addInventory() {
     // Increment stock quanity by user entered amount
 
-    inquirer.prompt ([
-        {
-            name: "id",
-            type: "input",
-            message: "Enter Product Id"
-        },
-        {
-            name: "qty" ,
-            type: "input",
-            message: "Enter quantity to add to stock"
-        }
-    ])
-    .then(function(res){
-        // Update product inventory
-        // connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: (stock_quantity+res.qty)}, {id: res.id}], 
-        connection.query(`UPDATE products SET stock_quantity = stock_quantity+${res.qty} WHERE ?`, [{id: res.id}], 
+    // Get the list of product ids
+    connection.query(`SELECT id FROM products`, (err, results) => { 
+        if (err) throw err;
+    
+        inquirer.prompt ([
+            {
+                name: "id",
+                type: "input",
+                message: "Enter Product Id",
+                validate: function(num){
+                    // Check if item number is valid
+                    if (results.find(x => x.id === parseInt(num))) {
+                        return true;
+                    }
+                    return false;
+                }
 
-            function (err,results) {
-                if (err) throw err;
-
-                console.log(chalk.green.bold(`\n${results.affectedRows} product updated!\n`));
-                manageInventory();
+            },
+            {
+                name: "qty" ,
+                type: "input",
+                message: "Enter quantity to add to stock"
             }
-        );
+        ])
+        .then(function(res){
+            // Update product inventory
+            connection.query(`UPDATE products SET stock_quantity = stock_quantity+${res.qty} WHERE ?`, [{id: res.id}], 
+
+                function (err,results) {
+                    if (err) throw err;
+
+                    console.log(chalk.green.bold(`\n${results.affectedRows} product updated!\n`));
+                    manageInventory();
+                }
+            );
+        });
     });
 }
 
