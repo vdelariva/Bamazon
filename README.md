@@ -9,13 +9,14 @@ A multi-app collection that helps with customer point of sale, inventory and sto
 
 Using node.js and various libraries, created applications to help with managing a retail store.
 * **bamazonCustomer.js:** Used to process a customer's purchase.
-  * This application displays the items for sale and allows the customer to select a product and quanity. Once the purchase is complete, the customer is notified of their purchase and the amount due. The app will also add the current puchase to the total_sales amount.
+  * This application displays the items for sale and allows the customer to select a product and quanity. Once the purchase is complete, the customer is notified of their purchase and the amount due. The app will also add the current puchase to the total_sales amount. The app will not display the total sales column to the customer.
   * Link to video: [Bamazon Customer](https://drive.google.com/file/d/19qeyLUsjshLld2a5UsC-mfhUwlQgEsah/view?usp=sharing)
 * **bamazonManager.js:** Used to manage the store's inventory.
   * View Products for Sale: Lists every available item: the item IDs, names, prices, quantities and product sales.
   * View Low Inventory: Lists all items with an inventory count lower than five.
   * Add to Inventory: Displays a prompt that will let the manager "add more" of any item currently in the store.
   * Add New Product: Adds a new product to the store.
+  * Link to video: [Bamazon Manager](https://drive.google.com/open?id=14UfWqV9X78qLLmTD1x0LDsIYp8gANyeF)
 * **bamazonSupervisor.js:** Used to evaluate the store's profits and structure.
   * View Product Sales by Department: Lists the total sales by department.
   * Create New Department: Adds a new department to the store.
