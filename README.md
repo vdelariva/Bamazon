@@ -12,14 +12,15 @@ Using node.js and various libraries, created applications to help with managing 
   * This application displays the items for sale and allows the customer to select a product and quanity. Once the purchase is complete, the customer is notified of their purchase and the amount due. The app will also add the current puchase to the total_sales amount. The app will not display the total sales column to the customer.
   * Link to video: [Bamazon Customer](https://drive.google.com/file/d/19qeyLUsjshLld2a5UsC-mfhUwlQgEsah/view?usp=sharing)
 * **bamazonManager.js:** Used to manage the store's inventory.
-  * View Products for Sale: Lists every available item: the item IDs, names, prices, quantities and product sales.
-  * View Low Inventory: Lists all items with an inventory count lower than five.
-  * Add to Inventory: Displays a prompt that will let the manager "add more" of any item currently in the store.
-  * Add New Product: Adds a new product to the store.
-  * Link to video: [Bamazon Manager](https://drive.google.com/open?id=14UfWqV9X78qLLmTD1x0LDsIYp8gANyeF)
+  * *View Products for Sale:* Lists every available item: the item IDs, names, prices, quantities and product sales.
+  * *View Low Inventory:* Lists all items with an inventory count lower than five.
+  * *Add to Inventory:* Displays a prompt that will let the manager "add more" of any item currently in the store.
+  * *Add New Product:* Adds a new product to the store.
+  * *Link to video:* [Bamazon Manager](https://drive.google.com/open?id=14UfWqV9X78qLLmTD1x0LDsIYp8gANyeF)
 * **bamazonSupervisor.js:** Used to evaluate the store's profits and structure.
-  * View Product Sales by Department: Lists the total sales by department.
-  * Create New Department: Adds a new department to the store.
+  * *View Product Sales by Department:* Lists the total sales by department. If a department exists where no products have been sold, the profit value shown will be the overhead costs (negative value).
+  * *Create New Department:* Adds a new department to the store.
+  * Link to video: [Bamazon Supervisor](https://drive.google.com/open?id=1zu2sdUjOVgDVZBDdeIcKAeeTAQTRSnRO)
 
 ## Tools ##
 
@@ -40,8 +41,11 @@ Using node.js and various libraries, created applications to help with managing 
     * When adding inventory to an existing product, checks if product id is valid.
   * Supervisor:
     * When adding a new department, limits the department name to 12 characters.
+  * General:
+    * When prompting for any numeric value, the apps will only allow a numeric value to be entered. Will reject any alpha character including a blank string. This is used when entering quantities, customer prices or costs.
     
 * Put common functions used in customer/manager/supervisor apps in common.js file. Functions include:
   * **displayItems:** Displays the store's inventory. Used by Customer & Manager apps. When called from the Customer app, will display the item id, product name, department name, price and quantity. When called from the Manager app, will additionally display the product sales column. In the manager app, this is used for supporting both the total inventory and low inventory functions.
   * **printHeader:** Prints a header banner. Used in Customer, Manager, and Supervisor apps. Used to display the welcome banners at the start of each app, also when displaying the store inventory and low inventory in the Manager app.
+  * **isNumber:** Returns true if prompted value is a number, either integer or float, will return false if any other character, including blank or return.
 * Used chalk library for pretty colors to be displayed on the console :)
