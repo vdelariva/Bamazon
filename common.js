@@ -16,7 +16,7 @@ function displayItems(list, color, user) {
         for (var i =0; i < list.length; i++) {
             console.log(`${list[i].id.toString().padEnd(7)} ${list[i].product_name.padEnd(22)} `
             + `${list[i].department.padEnd(14)} ${list[i].customer_price.toString().padEnd(12)} `
-            + `${list[i].stock_quantity.toString().padEnd(16)} ${list[i].product_sales}`);
+            + `${list[i].stock_quantity.toString().padEnd(16)} ${list[i].product_sales.toFixed(2)}`);
         }
     }
     else {        
@@ -52,8 +52,17 @@ function printMsg (msg, color){
     let c = chalk.bold.keyword(color);
     console.log(c(`\n${msg}\n`))
 }
+// ____________________________________________________________________________________
 
+function isNumber(num){
+    // Ensure value entered is a number. If float is entered, the db expects an integer and will truncate the value
+    if (isNaN(num) || (/^\s*$/.test(num))){
+        return false;
+    }
+    return true;
+}
 // ____________________________________________________________________________________
 
 module.exports.displayItems = displayItems;
 module.exports.printHeader = printHeader;
+module.exports.isNumber = isNumber;

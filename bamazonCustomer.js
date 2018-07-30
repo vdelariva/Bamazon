@@ -103,7 +103,7 @@ function updateInventory(ix, qty) {
                         if (err) throw err;
 
                         console.log(chalk`\n{green.bold Thank you for your purchase!} Your total is {magenta $${res1[0].customer_price*qty}.}\n`);
-                        connection.end();
+                        exitBamazon();
                     }
                 );
             }
@@ -111,5 +111,14 @@ function updateInventory(ix, qty) {
     }
     else {
         console.log(chalk.cyan(`\nSorry we weren't able to help you today. Come back soon!\n`));
+        exitBamazon();
     }
+}
+
+// ____________________________________________________________________________________
+
+function exitBamazon() {
+
+    console.log(chalk.blue.bold("\nHave a great day!\n"))
+    connection.end();
 }

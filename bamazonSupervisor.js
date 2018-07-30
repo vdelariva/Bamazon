@@ -62,12 +62,15 @@ function viewSales() {
 
     // Query the DB for all items in store inventory
     connection.query(
-        "SELECT department, (sales.total_sales - departments.over_head_costs) AS total_profit "
-        + "FROM (SELECT department, SUM(product_sales) AS total_sales FROM products GROUP BY department) AS sales "
-        + "INNER JOIN departments ON sales.department = departments.department_name",
+        "SELECT sales.department_name, departments.over_head_costs, (sales.total_sales - departments.over_head_costs) AS total_profit "
+		+ "FROM (SELECT department_name, SUM(product_sales) AS total_sales FROM products "
+        + "RIGHT JOIN departments ON department = department_name GROUP BY department_name) AS sales "
+        + "INNER JOIN departments ON sales.department_name = departments.department_name",
     
     (err, results) => {
         if (err) throw err;
+
+        console.log(JSON.stringify(results))
 
         common.printHeader("Product Sales by Department", "green")
         displaySales(results)
@@ -99,6 +102,7 @@ function addDepartment() {
             name: "costs" ,
             type: "input",
             message: "Enter Department Overhead Costs",
+            validate: (num) => {return common.isNumber(num);}
         }
     ])
     .then(function(response) {
@@ -109,7 +113,7 @@ function addDepartment() {
 
             if (err) throw err;
 
-            console.log(chalk.green.bold(`\n${results.affectedRows} product added!\n`));
+            console.log(chalk.green.bold(`\n${results.affectedRows} department added!\n`));
             manageDepartments();
         });
     });
@@ -122,10 +126,13 @@ function displaySales(list) {
     console.log(chalk.green("\nDepartment        Total Profit($)"));
     console.log(chalk.green("--------------------------------"));
 
-    // Display the inventory
-    // Don't display product_sales column to customer
+    // Display the sales by department
     for (var i =0; i < list.length; i++) {
-        console.log(`${list[i].department.padEnd(20)} ${list[i].total_profit.toString().padEnd(17)}`);
+        // If value is null, due to no sales for any product in selected department, then set value to over head costs (neg value)
+        if (list[i].total_profit === null){
+            list[i].total_profit = -list[i].over_head_costs;
+        }
+        console.log(`${list[i].department_name.padEnd(20)} ${list[i].total_profit.toFixed(2)}`);
     }
     console.log("\n");
 }

@@ -134,12 +134,14 @@ function addProduct() {
             {
                 name: "price",
                 type: "input",
-                message: "Enter Customer Price"
+                message: "Enter Customer Price",
+                validate: (num) => {return common.isNumber(num);}
             },
             {
                 name: "quantity",
                 type: "input",
-                message: "Enter Quantity"
+                message: "Enter Quantity",
+                validate: (num) => {return common.isNumber(num);}
             }
         ])
         .then(function(response) {
@@ -181,7 +183,8 @@ function addInventory() {
             {
                 name: "qty" ,
                 type: "input",
-                message: "Enter quantity to add to stock"
+                message: "Enter quantity to add to stock",
+                validate: (num) => {return common.isNumber(num);}
             }
         ])
         .then(function(res){
@@ -203,6 +206,6 @@ function addInventory() {
 
 function exitBamazon() {
 
-    console.log(chalk.blue.bold("\nHave a great day!\n"))
+    console.log(chalk.magenta.bold("\nHave a great day!\n"))
     connection.end();
 }
