@@ -55,7 +55,7 @@ function printMsg (msg, color){
 // ____________________________________________________________________________________
 
 function isNumber(num){
-    // Ensure value entered is a number. If float is entered, the db expects an integer and will truncate the value
+    // Ensure value entered is a number.
     if (isNaN(num) || (/^\s*$/.test(num))){
         return false;
     }

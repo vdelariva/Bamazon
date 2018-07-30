@@ -60,7 +60,9 @@ function manageDepartments() {
 
 function viewSales() {
 
-    // Query the DB for all items in store inventory
+    // First, select a list of departments with total sales for each department. Then, use this information to subtract
+    // department overhead costs from total sales for each department. Query returns a list of departments and the
+    // total profits for each department.
     connection.query(
         "SELECT sales.department_name, departments.over_head_costs, (sales.total_sales - departments.over_head_costs) AS total_profit "
 		+ "FROM (SELECT department_name, SUM(product_sales) AS total_sales FROM products "
@@ -69,8 +71,6 @@ function viewSales() {
     
     (err, results) => {
         if (err) throw err;
-
-        console.log(JSON.stringify(results))
 
         common.printHeader("Product Sales by Department", "green")
         displaySales(results)

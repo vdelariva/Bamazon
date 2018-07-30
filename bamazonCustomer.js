@@ -48,6 +48,11 @@ function purchaseItem() {
                 message: chalk.yellow("Which item would you like to purchase?"),
                 validate: function(num){
                     // Check if item number is valid, returns object if found, else returns -1 if not found
+                    // Note: 'item' is an object with the specific record if found in the db. Could use the variable 'item'
+                    // to access the values instead of querying the db later in updateInventory. Didn't know if it was best practice
+                    // to pass this variable into the next function, or perform a new query to get the requested record.
+                    // Probably the later, could modify updateInventory to pass the table name into the function, then the function
+                    // would be generic and could be used to udpate inventories in various tables.
                     item = results.find(x => x.id === parseInt(num));
                     if (item) {
                         return true;
