@@ -40,8 +40,11 @@ Using node.js and various libraries, created applications to help with managing 
     * When adding inventory to an existing product, checks if product id is valid.
   * Supervisor:
     * When adding a new department, limits the department name to 12 characters.
+  * General:
+    * When prompting for any numeric value, the apps will only allow a numeric value to be entered. Will reject any alpha character including a blank string. This is used when entering quantities, customer prices or costs.
     
 * Put common functions used in customer/manager/supervisor apps in common.js file. Functions include:
   * **displayItems:** Displays the store's inventory. Used by Customer & Manager apps. When called from the Customer app, will display the item id, product name, department name, price and quantity. When called from the Manager app, will additionally display the product sales column. In the manager app, this is used for supporting both the total inventory and low inventory functions.
   * **printHeader:** Prints a header banner. Used in Customer, Manager, and Supervisor apps. Used to display the welcome banners at the start of each app, also when displaying the store inventory and low inventory in the Manager app.
+  * **isNumber:** Returns true if prompted value is a number, either integer or float, will return false if any other character, including blank or return.
 * Used chalk library for pretty colors to be displayed on the console :)
