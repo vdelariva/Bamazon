@@ -25,7 +25,7 @@ Using node.js and various libraries, created applications to help with managing 
   
       Sales by Department:
   
-      ![Sales by Department](./images/SalesByDept.png)
+      ![Sales by Department](./images/SalesByDept2.png)
 
 ## Tools ##
 
