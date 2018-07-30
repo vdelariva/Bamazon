@@ -18,7 +18,7 @@ Using node.js and various libraries, created applications to help with managing 
   * Add New Product: Adds a new product to the store.
   * Link to video: [Bamazon Manager](https://drive.google.com/open?id=14UfWqV9X78qLLmTD1x0LDsIYp8gANyeF)
 * **bamazonSupervisor.js:** Used to evaluate the store's profits and structure.
-  * View Product Sales by Department: Lists the total sales by department.
+  * View Product Sales by Department: Lists the total sales by department. If a department exists where no products have been sold, the profit value shown will be the overhead costs (negative value).
   * Create New Department: Adds a new department to the store.
 
 ## Tools ##
