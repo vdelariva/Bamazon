@@ -61,10 +61,19 @@ function manageDepartments() {
 function viewSales() {
 
     // First, select a list of departments with total sales for each department. Then, use this information to subtract
-    // department overhead costs from total sales for each department. Query returns a list of departments and the
-    // total profits for each department.
+    // department overhead costs from total sales for each department. Query returns the department id, department name,
+    // total sales, overhead costs and total profits for each department.
+
+    // Could of used a simpler query such as:
+    // SELECT department_name, SUM(product_sales) AS total_sales FROM products
+    //      RIGHT JOIN departments ON department = department_name GROUP BY department_name;
+    //
+    // Which returns a table with the department name and product sales for each department, then calculated the profits by
+    // subtracting the overhead costs from the departments table.
+
     connection.query(
-        "SELECT sales.department_name, departments.over_head_costs, (sales.total_sales - departments.over_head_costs) AS total_profit "
+        "SELECT departments.department_id, sales.department_name, sales.total_sales, departments.over_head_costs,"
+        + "(sales.total_sales - departments.over_head_costs) AS total_profit "
 		+ "FROM (SELECT department_name, SUM(product_sales) AS total_sales FROM products "
         + "RIGHT JOIN departments ON department = department_name GROUP BY department_name) AS sales "
         + "INNER JOIN departments ON sales.department_name = departments.department_name",
@@ -123,8 +132,8 @@ function addDepartment() {
 
 function displaySales(list) {
     
-    console.log(chalk.green("\nDepartment        Total Profit($)"));
-    console.log(chalk.green("--------------------------------"));
+    console.log(chalk.green("\nID   Department     Total Sales($)  Overhead Costs($)   Total Profit($)"));
+    console.log(chalk.green("-----------------------------------------------------------------------"));
 
     // Display the sales by department
     for (var i =0; i < list.length; i++) {
@@ -132,7 +141,9 @@ function displaySales(list) {
         if (list[i].total_profit === null){
             list[i].total_profit = -list[i].over_head_costs;
         }
-        console.log(`${list[i].department_name.padEnd(20)} ${list[i].total_profit.toFixed(2)}`);
+        console.log(`${list[i].department_id.toString().padEnd(4)} ${list[i].department_name.padEnd(18)} `
+            + `${(list[i].total_sales.toFixed(2).toString()).padEnd(15)} `
+            + `${(list[i].over_head_costs.toFixed(2).toString()).padEnd(20)} ${list[i].total_profit.toFixed(2)}`);
     }
     console.log("\n");
 }
